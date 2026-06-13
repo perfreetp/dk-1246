@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView, Input, Video } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
@@ -7,6 +7,8 @@ import { generateId } from '../../utils';
 import VideoCard from '../../components/VideoCard';
 import EmptyState from '../../components/EmptyState';
 import styles from './index.module.scss';
+
+const DEMO_VIDEO_URL = 'https://www.w3schools.com/html/mov_bbb.mp4';
 
 const VideoPage: React.FC = () => {
   const { pets, videos, currentPetId, addVideo } = useAppContext();
@@ -20,6 +22,7 @@ const VideoPage: React.FC = () => {
   const [tagInput, setTagInput] = useState('');
   const [tempVideoPath, setTempVideoPath] = useState('');
   const [tempVideoDuration, setTempVideoDuration] = useState(30);
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentPet = useMemo(() => {
     return pets.find(p => p.id === currentPetId) || pets[0];
@@ -29,7 +32,18 @@ const VideoPage: React.FC = () => {
     return videos.filter(v => v.petId === currentPet?.id);
   }, [videos, currentPet]);
 
+  useEffect(() => {
+    if (petVideos.length > 0) {
+      console.log('[VideoPage] Loaded videos:', petVideos.length);
+      petVideos.forEach(v => {
+        console.log('[VideoPage] Video:', v.title, 'URL:', v.videoUrl ? 'present' : 'missing');
+      });
+    }
+  }, [petVideos]);
+
   const handleUpload = () => {
+    setIsLoading(true);
+    
     if (process.env.TARO_ENV === 'weapp') {
       Taro.chooseMedia({
         count: 1,
@@ -41,18 +55,26 @@ const VideoPage: React.FC = () => {
             setTempVideoPath(tempFile.tempFilePath);
             setTempVideoDuration(Math.round(tempFile.duration || 30));
             setShowUploadModal(true);
+            setIsLoading(false);
+          } else {
+            setTempVideoPath(DEMO_VIDEO_URL);
+            setTempVideoDuration(30);
+            setShowUploadModal(true);
+            setIsLoading(false);
           }
         },
         fail: () => {
-          setTempVideoPath('https://www.w3schools.com/html/mov_bbb.mp4');
+          setTempVideoPath(DEMO_VIDEO_URL);
           setTempVideoDuration(30);
           setShowUploadModal(true);
+          setIsLoading(false);
         }
       });
     } else {
-      setTempVideoPath('https://www.w3schools.com/html/mov_bbb.mp4');
+      setTempVideoPath(DEMO_VIDEO_URL);
       setTempVideoDuration(30);
       setShowUploadModal(true);
+      setIsLoading(false);
     }
   };
 
@@ -111,10 +133,13 @@ const VideoPage: React.FC = () => {
   };
 
   const handleVideoClick = (video: TrainingVideo) => {
+    console.log('[VideoPage] Clicked video:', video.title, 'URL:', video.videoUrl);
+    
     if (!video.videoUrl) {
       Taro.showToast({ title: '视频地址无效', icon: 'none' });
       return;
     }
+    
     setCurrentVideo(video);
     setShowPlayer(true);
   };
@@ -124,8 +149,9 @@ const VideoPage: React.FC = () => {
     setCurrentVideo(null);
   };
 
-  const handlePlayerError = () => {
-    Taro.showToast({ title: '视频播放失败，请稍后重试', icon: 'none' });
+  const handlePlayerError = (e: any) => {
+    console.error('[VideoPage] Player error:', e);
+    Taro.showToast({ title: '视频播放失败', icon: 'none' });
     setShowPlayer(false);
   };
 
@@ -234,7 +260,7 @@ const VideoPage: React.FC = () => {
               controls
               showCenterPlayBtn
               enableProgressGesture
-              onError={handlePlayerError}
+              onError={() => handlePlayerError}
             />
           </View>
         </View>

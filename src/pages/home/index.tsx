@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
+import Taro from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
 import { calculateStreak } from '../../utils';
 import PetCard from '../../components/PetCard';
@@ -35,42 +35,37 @@ const HomePage: React.FC = () => {
     return Math.round((successCount / todayRecords.length) * 100);
   }, [todayRecords]);
 
-  const navigateToTab = (tabIndex: number) => {
-    const app = Taro.getApp();
-    if (app?.switchTab) {
+  const goToCheckin = useCallback(() => {
+    try {
       const pages = Taro.getCurrentPages();
       const currentPage = pages[pages.length - 1];
-      const pagePath = currentPage?.route || '';
+      const currentPath = currentPage?.route || '';
       
-      const tabMap: Record<string, string> = {
-        '/pages/checkin/index': 3,
-        '/pages/video/index': 4
-      };
-      
-      const targetTab = tabMap[pagePath] !== tabIndex ? tabIndex : -1;
-      
-      if (targetTab >= 0) {
-        try {
-          Taro.switchTab({ url: tabIndex === 3 ? '/pages/checkin/index' : '/pages/video/index' });
-        } catch {
-          const tabBar = app.$$global?.tabBar;
-          if (tabBar && typeof tabBar.setCurrentIndex === 'function') {
-            tabBar.setCurrentIndex(targetTab);
-          }
-        }
+      if (currentPath !== '/pages/checkin/index') {
+        Taro.switchTab({ url: '/pages/checkin/index' });
+      } else {
+        Taro.showToast({ title: '已在打卡页', icon: 'none' });
       }
-    } else {
-      Taro.switchTab({ url: tabIndex === 3 ? '/pages/checkin/index' : '/pages/video/index' });
+    } catch (e) {
+      Taro.switchTab({ url: '/pages/checkin/index' });
     }
-  };
+  }, []);
 
-  const handleGoToCheckin = () => {
-    navigateToTab(3);
-  };
-
-  const handleGoToVideo = () => {
-    navigateToTab(4);
-  };
+  const goToVideo = useCallback(() => {
+    try {
+      const pages = Taro.getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      const currentPath = currentPage?.route || '';
+      
+      if (currentPath !== '/pages/video/index') {
+        Taro.switchTab({ url: '/pages/video/index' });
+      } else {
+        Taro.showToast({ title: '已在视频页', icon: 'none' });
+      }
+    } catch (e) {
+      Taro.switchTab({ url: '/pages/video/index' });
+    }
+  }, []);
 
   const handlePlanClick = (planId: string) => {
     Taro.navigateTo({ url: `/pages/training-detail/index?planId=${planId}` });
@@ -129,11 +124,11 @@ const HomePage: React.FC = () => {
       </View>
 
       <View className={styles.quickActions}>
-        <View className={styles.actionItem} onClick={handleGoToCheckin}>
+        <View className={styles.actionItem} onClick={goToCheckin}>
           <View className={styles.actionIcon}>📝</View>
           <Text className={styles.actionText}>快速打卡</Text>
         </View>
-        <View className={styles.actionItem} onClick={handleGoToVideo}>
+        <View className={styles.actionItem} onClick={goToVideo}>
           <View className={styles.actionIcon}>📹</View>
           <Text className={styles.actionText}>上传视频</Text>
         </View>
