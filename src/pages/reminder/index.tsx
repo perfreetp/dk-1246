@@ -11,7 +11,8 @@ const dayNames = ['一', '二', '三', '四', '五', '六', '日'];
 const ReminderPage: React.FC = () => {
   const { pets, reminders, currentPetId, addReminder, updateReminder } = useAppContext();
   const [showModal, setShowModal] = useState(false);
-  const [newReminder, setNewReminder] = useState({
+  const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+  const [modalData, setModalData] = useState({
     petId: '',
     timeHour: '09',
     timeMin: '00',
@@ -31,7 +32,7 @@ const ReminderPage: React.FC = () => {
   };
 
   const handleToggleDay = (day: number) => {
-    setNewReminder(prev => ({
+    setModalData(prev => ({
       ...prev,
       days: prev.days.includes(day)
         ? prev.days.filter(d => d !== day)
@@ -39,40 +40,71 @@ const ReminderPage: React.FC = () => {
     }));
   };
 
-  const handleAddReminder = () => {
-    if (!newReminder.petId) {
-      Taro.showToast({ title: '请选择宠物', icon: 'none' });
-      return;
-    }
-    if (newReminder.days.length === 0) {
-      Taro.showToast({ title: '请至少选择一天', icon: 'none' });
-      return;
-    }
-
-    const time = `${newReminder.timeHour.padStart(2, '0')}:${newReminder.timeMin.padStart(2, '0')}`;
-    
-    const reminder: Reminder = {
-      id: generateId(),
-      petId: newReminder.petId,
-      time,
-      enabled: true,
-      days: newReminder.days.sort()
-    };
-
-    addReminder(reminder);
-    setShowModal(false);
-    setNewReminder({
-      petId: '',
+  const openAddModal = () => {
+    setEditingReminder(null);
+    setModalData({
+      petId: currentPet?.id || '',
       timeHour: '09',
       timeMin: '00',
       days: [1, 2, 3, 4, 5, 6, 7]
     });
-    Taro.showToast({ title: '提醒设置成功', icon: 'success' });
+    setShowModal(true);
   };
 
-  const openAddModal = () => {
-    setNewReminder(prev => ({ ...prev, petId: currentPet?.id || '' }));
+  const openEditModal = (reminder: Reminder) => {
+    const [hour, min] = reminder.time.split(':');
+    setEditingReminder(reminder);
+    setModalData({
+      petId: reminder.petId,
+      timeHour: hour || '09',
+      timeMin: min || '00',
+      days: [...reminder.days]
+    });
     setShowModal(true);
+  };
+
+  const handleSave = () => {
+    if (!modalData.petId) {
+      Taro.showToast({ title: '请选择宠物', icon: 'none' });
+      return;
+    }
+    if (modalData.days.length === 0) {
+      Taro.showToast({ title: '请至少选择一天', icon: 'none' });
+      return;
+    }
+
+    const time = `${modalData.timeHour.padStart(2, '0')}:${modalData.timeMin.padStart(2, '0')}`;
+
+    if (editingReminder) {
+      updateReminder(editingReminder.id, {
+        time,
+        days: modalData.days.sort()
+      });
+      Taro.showToast({ title: '修改成功', icon: 'success' });
+    } else {
+      const reminder: Reminder = {
+        id: generateId(),
+        petId: modalData.petId,
+        time,
+        enabled: true,
+        days: modalData.days.sort()
+      };
+      addReminder(reminder);
+      Taro.showToast({ title: '添加成功', icon: 'success' });
+    }
+
+    setShowModal(false);
+    setEditingReminder(null);
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    setEditingReminder(null);
+  };
+
+  const getPetName = (petId: string): string => {
+    const pet = pets.find(p => p.id === petId);
+    return pet?.name || '未知宠物';
   };
 
   return (
@@ -90,12 +122,14 @@ const ReminderPage: React.FC = () => {
           </View>
           <View className={styles.reminderList}>
             {petReminders.length > 0 ? (
-              petReminders.map(reminder => {
-                const pet = pets.find(p => p.id === reminder.petId);
-                return (
-                  <View key={reminder.id} className={styles.reminderItem}>
+              petReminders.map(reminder => (
+                <View key={reminder.id} className={styles.reminderItem}>
+                  <View 
+                    className={styles.reminderContent}
+                    onClick={() => openEditModal(reminder)}
+                  >
                     <View className={styles.petInfo}>
-                      <Text className={styles.petName}>{pet?.name || '未知宠物'}</Text>
+                      <Text className={styles.petName}>{getPetName(reminder.petId)}</Text>
                       <Text className={styles.reminderTime}>每天 {reminder.time}</Text>
                       <View className={styles.days}>
                         {[1, 2, 3, 4, 5, 6, 7].map(day => (
@@ -108,15 +142,15 @@ const ReminderPage: React.FC = () => {
                         ))}
                       </View>
                     </View>
-                    <Switch 
-                      className={styles.switch}
-                      checked={reminder.enabled}
-                      color='#FF9B52'
-                      onChange={() => handleToggleReminder(reminder)}
-                    />
                   </View>
-                );
-              })
+                  <Switch 
+                    className={styles.switch}
+                    checked={reminder.enabled}
+                    color='#FF9B52'
+                    onChange={() => handleToggleReminder(reminder)}
+                  />
+                </View>
+              ))
             ) : (
               <View className={styles.emptyReminder}>
                 <Text style={{ color: '#B2BEC3', textAlign: 'center', width: '100%' }}>
@@ -143,9 +177,11 @@ const ReminderPage: React.FC = () => {
       </View>
 
       {showModal && (
-        <View className={styles.modal} onClick={() => setShowModal(false)}>
+        <View className={styles.modal} onClick={handleCancel}>
           <View className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <Text className={styles.modalTitle}>添加训练提醒</Text>
+            <Text className={styles.modalTitle}>
+              {editingReminder ? '编辑提醒' : '添加训练提醒'}
+            </Text>
 
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>选择宠物</Text>
@@ -153,8 +189,8 @@ const ReminderPage: React.FC = () => {
                 {pets.map(pet => (
                   <View
                     key={pet.id}
-                    className={`${styles.dayItem} ${newReminder.petId === pet.id ? styles.dayItemActive : ''}`}
-                    onClick={() => setNewReminder(prev => ({ ...prev, petId: pet.id }))}
+                    className={`${styles.dayItem} ${modalData.petId === pet.id ? styles.dayItemActive : ''}`}
+                    onClick={() => setModalData(prev => ({ ...prev, petId: pet.id }))}
                   >
                     {pet.name}
                   </View>
@@ -170,10 +206,10 @@ const ReminderPage: React.FC = () => {
                     className={styles.timeInput}
                     type='number'
                     maxlength={2}
-                    value={newReminder.timeHour}
+                    value={modalData.timeHour}
                     onInput={e => {
                       const val = e.detail.value.slice(0, 2);
-                      setNewReminder(prev => ({ ...prev, timeHour: val }));
+                      setModalData(prev => ({ ...prev, timeHour: val }));
                     }}
                   />
                   <Text className={styles.timeColon}>时</Text>
@@ -184,10 +220,10 @@ const ReminderPage: React.FC = () => {
                     className={styles.timeInput}
                     type='number'
                     maxlength={2}
-                    value={newReminder.timeMin}
+                    value={modalData.timeMin}
                     onInput={e => {
                       const val = e.detail.value.slice(0, 2);
-                      setNewReminder(prev => ({ ...prev, timeMin: val }));
+                      setModalData(prev => ({ ...prev, timeMin: val }));
                     }}
                   />
                   <Text className={styles.timeColon}>分</Text>
@@ -201,7 +237,7 @@ const ReminderPage: React.FC = () => {
                 {[1, 2, 3, 4, 5, 6, 7].map(day => (
                   <View
                     key={day}
-                    className={`${styles.dayItem} ${newReminder.days.includes(day) ? styles.dayItemActive : ''}`}
+                    className={`${styles.dayItem} ${modalData.days.includes(day) ? styles.dayItemActive : ''}`}
                     onClick={() => handleToggleDay(day)}
                   >
                     {dayNames[day - 1]}
@@ -211,10 +247,10 @@ const ReminderPage: React.FC = () => {
             </View>
 
             <View className={styles.btnRow}>
-              <View className={styles.cancelBtn} onClick={() => setShowModal(false)}>
+              <View className={styles.cancelBtn} onClick={handleCancel}>
                 <Text className={styles.cancelBtnText}>取消</Text>
               </View>
-              <View className={styles.submitBtn} onClick={handleAddReminder}>
+              <View className={styles.submitBtn} onClick={handleSave}>
                 <Text className={styles.submitBtnText}>保存</Text>
               </View>
             </View>

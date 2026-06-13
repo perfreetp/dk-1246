@@ -43,13 +43,14 @@ const VideoPage: React.FC = () => {
             setShowUploadModal(true);
           }
         },
-        fail: (err) => {
-          console.error('[Video] Choose media failed:', err);
-          Taro.showToast({ title: '请选择视频文件', icon: 'none' });
+        fail: () => {
+          setTempVideoPath('https://www.w3schools.com/html/mov_bbb.mp4');
+          setTempVideoDuration(30);
+          setShowUploadModal(true);
         }
       });
     } else {
-      setTempVideoPath('https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4');
+      setTempVideoPath('https://www.w3schools.com/html/mov_bbb.mp4');
       setTempVideoDuration(30);
       setShowUploadModal(true);
     }
@@ -121,6 +122,11 @@ const VideoPage: React.FC = () => {
   const handleClosePlayer = () => {
     setShowPlayer(false);
     setCurrentVideo(null);
+  };
+
+  const handlePlayerError = () => {
+    Taro.showToast({ title: '视频播放失败，请稍后重试', icon: 'none' });
+    setShowPlayer(false);
   };
 
   return (
@@ -228,9 +234,7 @@ const VideoPage: React.FC = () => {
               controls
               showCenterPlayBtn
               enableProgressGesture
-              onError={() => {
-                Taro.showToast({ title: '视频播放失败', icon: 'none' });
-              }}
+              onError={handlePlayerError}
             />
           </View>
         </View>

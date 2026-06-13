@@ -67,6 +67,11 @@
   }
 }
 
+.reminderContent {
+  flex: 1;
+  min-width: 0;
+}
+
 .emptyReminder {
   display: flex;
   justify-content: center;

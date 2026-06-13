@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
 import { calculateStreak } from '../../utils';
 import PetCard from '../../components/PetCard';
@@ -35,12 +35,41 @@ const HomePage: React.FC = () => {
     return Math.round((successCount / todayRecords.length) * 100);
   }, [todayRecords]);
 
+  const navigateToTab = (tabIndex: number) => {
+    const app = Taro.getApp();
+    if (app?.switchTab) {
+      const pages = Taro.getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      const pagePath = currentPage?.route || '';
+      
+      const tabMap: Record<string, string> = {
+        '/pages/checkin/index': 3,
+        '/pages/video/index': 4
+      };
+      
+      const targetTab = tabMap[pagePath] !== tabIndex ? tabIndex : -1;
+      
+      if (targetTab >= 0) {
+        try {
+          Taro.switchTab({ url: tabIndex === 3 ? '/pages/checkin/index' : '/pages/video/index' });
+        } catch {
+          const tabBar = app.$$global?.tabBar;
+          if (tabBar && typeof tabBar.setCurrentIndex === 'function') {
+            tabBar.setCurrentIndex(targetTab);
+          }
+        }
+      }
+    } else {
+      Taro.switchTab({ url: tabIndex === 3 ? '/pages/checkin/index' : '/pages/video/index' });
+    }
+  };
+
   const handleGoToCheckin = () => {
-    Taro.switchTab({ url: '/pages/checkin/index' });
+    navigateToTab(3);
   };
 
   const handleGoToVideo = () => {
-    Taro.switchTab({ url: '/pages/video/index' });
+    navigateToTab(4);
   };
 
   const handlePlanClick = (planId: string) => {
