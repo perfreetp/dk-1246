@@ -1,0 +1,275 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: $spacing-xl $page-padding;
+  background: $gradient-primary;
+}
+
+.iconRow {
+  text-align: center;
+  margin-bottom: $spacing-md;
+}
+
+.icon {
+  font-size: 100rpx;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  text-align: center;
+}
+
+.stage {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-sm;
+}
+
+.stageTag {
+  padding: 4rpx 16rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-white;
+}
+
+.progressSection {
+  margin-top: $spacing-lg;
+  padding: $spacing-lg;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-lg;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.progressLabel {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.progressValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.progressBar {
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-text-white;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.content {
+  padding: $page-padding;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.infoCard {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.infoIcon {
+  width: 64rpx;
+  height: 64rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  @include flex-center;
+  font-size: 32rpx;
+  margin-right: $spacing-md;
+}
+
+.infoLabel {
+  flex: 1;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.recordList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.recordItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.recordIcon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  @include flex-center;
+  margin-right: $spacing-md;
+}
+
+.recordIconSuccess {
+  background: rgba($color-success, 0.1);
+  color: $color-success;
+}
+
+.recordIconFail {
+  background: rgba($color-error, 0.1);
+  color: $color-error;
+}
+
+.recordInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.recordDate {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.recordDuration {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  margin-top: $spacing-lg;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.actionBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.completeModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  @include flex-center;
+}
+
+.modalContent {
+  width: 90%;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  text-align: center;
+}
+
+.celebration {
+  font-size: 120rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.modalTitle {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.modalText {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $spacing-xl;
+}
+
+.modalBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md $spacing-xl;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  margin: 0 $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.modalBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}

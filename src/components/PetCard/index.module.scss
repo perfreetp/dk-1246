@@ -1,0 +1,70 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.selected {
+  border: 2rpx solid $color-primary;
+  background: $color-bg-hover;
+}
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: $radius-round;
+}
+
+.badge {
+  position: absolute;
+  right: -8rpx;
+  bottom: -8rpx;
+  font-size: 28rpx;
+}
+
+.info {
+  flex: 1;
+  margin-left: $spacing-md;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.breed {
+  display: block;
+  margin-top: 4rpx;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.members {
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.memberCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

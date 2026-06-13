@@ -1,0 +1,192 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $gradient-warm;
+  padding-bottom: 120rpx;
+}
+
+.certificate {
+  margin: $page-padding;
+  padding: $spacing-xl;
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-popup;
+  text-align: center;
+}
+
+.certificateBorder {
+  padding: $spacing-md;
+  border: 4rpx solid $color-primary;
+  border-radius: $radius-lg;
+}
+
+.certificateHeader {
+  margin-bottom: $spacing-xl;
+}
+
+.certificateIcon {
+  font-size: 100rpx;
+  margin-bottom: $spacing-md;
+}
+
+.certificateTitle {
+  display: block;
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 8rpx;
+}
+
+.certificateSubtitle {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+}
+
+.certificateBody {
+  padding: $spacing-xl 0;
+  border-top: 2rpx dashed $color-border;
+  border-bottom: 2rpx dashed $color-border;
+}
+
+.petName {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.planName {
+  display: block;
+  font-size: $font-size-lg;
+  color: $color-primary;
+  margin-bottom: $spacing-lg;
+}
+
+.date {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.certificateFooter {
+  margin-top: $spacing-xl;
+}
+
+.congrats {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.suggestion {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.8;
+  text-align: left;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.section {
+  margin: $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.nextPlanList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.nextPlanItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  transition: all $transition-base;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.planIcon {
+  width: 80rpx;
+  height: 80rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  @include flex-center;
+  font-size: 40rpx;
+  margin-right: $spacing-md;
+}
+
+.planInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.planNameText {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.planDesc {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.startBtn {
+  padding: $spacing-sm $spacing-md;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.shareBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+  background: $gradient-primary;
+  border-radius: $radius-button;
+  margin: $page-padding;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.shareBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-left: $spacing-sm;
+}

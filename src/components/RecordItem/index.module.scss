@@ -1,0 +1,91 @@
+@use '@/styles/variables.scss' as *;
+
+.item {
+  display: flex;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.status {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  @include flex-center;
+  margin-right: $spacing-md;
+}
+
+.successIcon {
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-success;
+  color: $color-text-white;
+  border-radius: $radius-round;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  @include flex-center;
+}
+
+.failIcon {
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-error;
+  color: $color-text-white;
+  border-radius: $radius-round;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  @include flex-center;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4rpx;
+}
+
+.planName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.date {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.details {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: 4rpx;
+}
+
+.detail {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.notes {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}

@@ -1,0 +1,137 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $gradient-warm;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-lg $page-padding;
+  background: $gradient-primary;
+  border-radius: 0 0 48rpx 48rpx;
+}
+
+.petSelector {
+  display: flex;
+  gap: $spacing-md;
+  overflow-x: auto;
+  padding-bottom: $spacing-sm;
+  @include scroll-x-container;
+}
+
+.welcome {
+  margin-top: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.welcomeText {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.subText {
+  display: block;
+  margin-top: 8rpx;
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.quickCheckin {
+  margin: $spacing-lg $page-padding;
+}
+
+.sectionTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding: 0 $page-padding;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.moreBtn {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  @include button-reset;
+}
+
+.planList {
+  padding: 0 $page-padding;
+}
+
+.quickActions {
+  display: flex;
+  justify-content: space-around;
+  padding: $spacing-lg $page-padding;
+}
+
+.actionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  min-width: 160rpx;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.actionIcon {
+  width: 80rpx;
+  height: 80rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  @include flex-center;
+  margin-bottom: $spacing-sm;
+  font-size: 40rpx;
+}
+
+.actionText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.tips {
+  margin: $spacing-lg $page-padding;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-primary;
+}
+
+.tipsTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.tipsContent {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}

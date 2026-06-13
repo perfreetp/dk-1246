@@ -1,0 +1,43 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  flex: 1;
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  min-width: 0;
+  text-align: center;
+}
+
+.iconWrapper {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  margin: 0 auto $spacing-sm;
+  @include flex-center;
+}
+
+.icon {
+  font-size: 40rpx;
+}
+
+.title {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+}
+
+.value {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+}
+
+.subtitle {
+  display: block;
+  margin-top: 4rpx;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

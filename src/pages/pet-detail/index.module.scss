@@ -1,0 +1,173 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  padding: $spacing-xl $page-padding;
+  background: $gradient-primary;
+  text-align: center;
+}
+
+.avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-round;
+  border: 6rpx solid rgba(255, 255, 255, 0.5);
+  margin-bottom: $spacing-md;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.breed {
+  display: block;
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8rpx;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-xl;
+  margin-top: $spacing-lg;
+}
+
+.infoItem {
+  text-align: center;
+}
+
+.infoValue {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.infoLabel {
+  display: block;
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4rpx;
+}
+
+.content {
+  padding: $page-padding;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.memberList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.memberAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  margin-right: $spacing-md;
+}
+
+.memberInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberName {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.memberRole {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.roleTag {
+  padding: 4rpx 12rpx;
+  background: $color-bg-page;
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  margin-top: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.actionBtnText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  margin-left: $spacing-sm;
+}
+
+.tip {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-primary;
+}
+
+.tipTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.tipText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}

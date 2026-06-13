@@ -1,0 +1,34 @@
+// ============================================
+// 主题配色变量（宠物训练小程序 - 温暖治愈风格）
+// ============================================
+
+// 品牌主题色：温暖橙色，代表活力与热情
+$color-primary: #FF9B52;
+$color-primary-light: #FFB07A;
+$color-primary-dark: #E88A45;
+
+// 功能色
+$color-success: #00B894;
+$color-warning: #FDCB6E;
+$color-error: #E17055;
+$color-info: #74B9FF;
+
+// 背景色
+$color-bg-page: #FFF9F5;
+$color-bg-card: #FFFFFF;
+$color-bg-hover: #FFF3ED;
+
+// 文本色
+$color-text-primary: #2D3436;
+$color-text-secondary: #636E72;
+$color-text-tertiary: #B2BEC3;
+$color-text-disabled: #DFE6E9;
+$color-text-white: #FFFFFF;
+
+// 边框色
+$color-border: #E8E8E8;
+$color-divider: #F5F5F5;
+
+// 渐变色
+$gradient-primary: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+$gradient-warm: linear-gradient(180deg, #FFF9F5 0%, #FFF5EE 100%);

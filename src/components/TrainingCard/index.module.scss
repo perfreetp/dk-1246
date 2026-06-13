@@ -1,0 +1,124 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.iconWrapper {
+  width: 80rpx;
+  height: 80rpx;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  @include flex-center;
+}
+
+.icon {
+  font-size: 40rpx;
+}
+
+.titleWrapper {
+  flex: 1;
+  margin-left: $spacing-md;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.tags {
+  display: flex;
+  margin-top: 8rpx;
+}
+
+.tag {
+  padding: 4rpx 12rpx;
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  border-radius: $radius-xs;
+}
+
+.content {
+  display: flex;
+  padding: $spacing-md 0;
+  border-top: 1rpx solid $color-divider;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.item {
+  flex: 1;
+
+  &:first-child {
+    border-right: 1rpx solid $color-divider;
+  }
+}
+
+.label {
+  display: block;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.value {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.progress {
+  margin-top: $spacing-md;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.progressLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.progressValue {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.progressBar {
+  height: 12rpx;
+  background: $color-bg-page;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $gradient-primary;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
