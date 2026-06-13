@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import Taro from '@tarojs/taro';
 import { AppState, Pet, TrainingPlan, TrainingRecord, TrainingVideo, Reminder } from '../types';
 import { mockPets } from '../data/pets';
 import { mockPlans } from '../data/plans';
@@ -13,7 +14,32 @@ interface AppContextState extends AppState {
   completePlan: (planId: string) => void;
 }
 
-const initialState = {
+const STORAGE_KEYS = {
+  plans: 'pet_training_plans',
+  records: 'pet_training_records',
+  videos: 'pet_training_videos',
+  reminders: 'pet_training_reminders',
+  currentPetId: 'pet_training_current_pet'
+};
+
+const loadFromStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const data = Taro.getStorageSync(key);
+    return data ? JSON.parse(data) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const saveToStorage = (key: string, data: any) => {
+  try {
+    Taro.setStorageSync(key, JSON.stringify(data));
+  } catch (e) {
+    console.error('[Storage] Failed to save:', key, e);
+  }
+};
+
+const AppContext = createContext<AppContextState>({
   pets: mockPets,
   plans: mockPlans,
   records: mockRecords,
@@ -21,16 +47,12 @@ const initialState = {
   reminders: [
     { id: '1', petId: '1', time: '09:00', enabled: true, days: [1, 2, 3, 4, 5, 6, 7] },
     { id: '2', petId: '2', time: '20:00', enabled: true, days: [1, 3, 5, 7] }
-  ] as Reminder[],
+  ],
   currentPetId: '1',
   setCurrentPet: () => {},
   addPlan: () => {},
   addRecord: () => {},
-  updatePlanProgress: () => {}
-};
-
-const AppContext = createContext<AppContextState>({
-  ...initialState,
+  updatePlanProgress: () => {},
   addVideo: () => {},
   addReminder: () => {},
   updateReminder: () => {},
@@ -39,19 +61,45 @@ const AppContext = createContext<AppContextState>({
 });
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [pets, setPets] = useState<Pet[]>(initialState.pets);
-  const [plans, setPlans] = useState<TrainingPlan[]>(initialState.plans);
-  const [records, setRecords] = useState<TrainingRecord[]>(initialState.records);
-  const [videos, setVideos] = useState<TrainingVideo[]>(initialState.videos);
-  const [reminders, setReminders] = useState<Reminder[]>(initialState.reminders);
-  const [currentPetId, setCurrentPetId] = useState<string | null>('1');
+  const [pets] = useState<Pet[]>(mockPets);
+  const [plans, setPlans] = useState<TrainingPlan[]>(() => loadFromStorage(STORAGE_KEYS.plans, mockPlans));
+  const [records, setRecords] = useState<TrainingRecord[]>(() => loadFromStorage(STORAGE_KEYS.records, mockRecords));
+  const [videos, setVideos] = useState<TrainingVideo[]>(() => loadFromStorage(STORAGE_KEYS.videos, mockVideos));
+  const [reminders, setReminders] = useState<Reminder[]>(() => loadFromStorage(STORAGE_KEYS.reminders, [
+    { id: '1', petId: '1', time: '09:00', enabled: true, days: [1, 2, 3, 4, 5, 6, 7] },
+    { id: '2', petId: '2', time: '20:00', enabled: true, days: [1, 3, 5, 7] }
+  ]));
+  const [currentPetId, setCurrentPetId] = useState<string | null>(() => loadFromStorage(STORAGE_KEYS.currentPetId, '1'));
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.plans, plans);
+  }, [plans]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.records, records);
+  }, [records]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.videos, videos);
+  }, [videos]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.reminders, reminders);
+  }, [reminders]);
+
+  useEffect(() => {
+    saveToStorage(STORAGE_KEYS.currentPetId, currentPetId);
+  }, [currentPetId]);
 
   const setCurrentPet = useCallback((petId: string) => {
     setCurrentPetId(petId);
   }, []);
 
   const addPlan = useCallback((plan: TrainingPlan) => {
-    setPlans(prev => [...prev, plan]);
+    setPlans(prev => {
+      const newPlans = [...prev, plan];
+      return newPlans;
+    });
   }, []);
 
   const addRecord = useCallback((record: TrainingRecord) => {
@@ -75,7 +123,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const addVideo = useCallback((video: TrainingVideo) => {
-    setVideos(prev => [video, ...prev]);
+    setVideos(prev => {
+      const newVideos = [video, ...prev];
+      return newVideos;
+    });
   }, []);
 
   const addReminder = useCallback((reminder: Reminder) => {

@@ -96,7 +96,7 @@ const CheckinPage: React.FC = () => {
       if (newProgress >= plan.totalDays) {
         Taro.showModal({
           title: '🎉 训练达标！',
-          content: `${plan.name}训练目标已完成！可以去查看证书了。`,
+          content: `${plan.name}训练目标已完成！可以去"计划"页面查看证书。`,
           showCancel: false,
           confirmText: '好的'
         });

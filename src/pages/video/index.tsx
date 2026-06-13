@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, Input } from '@tarojs/components';
+import { View, Text, ScrollView, Input, Video } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
 import { TrainingVideo } from '../../types';
@@ -11,11 +11,15 @@ import styles from './index.module.scss';
 const VideoPage: React.FC = () => {
   const { pets, videos, currentPetId, addVideo } = useAppContext();
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState<TrainingVideo | null>(null);
   const [newVideo, setNewVideo] = useState({
     title: '',
     tags: [] as string[]
   });
   const [tagInput, setTagInput] = useState('');
+  const [tempVideoPath, setTempVideoPath] = useState('');
+  const [tempVideoDuration, setTempVideoDuration] = useState(30);
 
   const currentPet = useMemo(() => {
     return pets.find(p => p.id === currentPetId) || pets[0];
@@ -32,16 +36,21 @@ const VideoPage: React.FC = () => {
         mediaType: ['video'],
         sourceType: ['album', 'camera'],
         success: (res) => {
-          const tempFile = res.tempFiles[0];
-          setShowUploadModal(true);
-          (global as any).__tempVideoPath = tempFile.tempFilePath;
-          (global as any).__tempVideoDuration = Math.round(tempFile.duration || 30);
+          if (res.tempFiles && res.tempFiles.length > 0) {
+            const tempFile = res.tempFiles[0];
+            setTempVideoPath(tempFile.tempFilePath);
+            setTempVideoDuration(Math.round(tempFile.duration || 30));
+            setShowUploadModal(true);
+          }
         },
-        fail: () => {
-          setShowUploadModal(true);
+        fail: (err) => {
+          console.error('[Video] Choose media failed:', err);
+          Taro.showToast({ title: '请选择视频文件', icon: 'none' });
         }
       });
     } else {
+      setTempVideoPath('https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4');
+      setTempVideoDuration(30);
       setShowUploadModal(true);
     }
   };
@@ -64,6 +73,10 @@ const VideoPage: React.FC = () => {
   };
 
   const handleSaveVideo = () => {
+    if (!tempVideoPath) {
+      Taro.showToast({ title: '请先选择视频', icon: 'none' });
+      return;
+    }
     if (!newVideo.title.trim()) {
       Taro.showToast({ title: '请输入视频标题', icon: 'none' });
       return;
@@ -75,8 +88,8 @@ const VideoPage: React.FC = () => {
       petId: currentPet?.id || '',
       title: newVideo.title,
       coverUrl: `https://picsum.photos/id/${Math.floor(Math.random() * 200)}/400/300`,
-      videoUrl: (global as any).__tempVideoPath || '',
-      duration: (global as any).__tempVideoDuration || 30,
+      videoUrl: tempVideoPath,
+      duration: tempVideoDuration,
       createdAt: new Date().toISOString().split('T')[0],
       tags: newVideo.tags
     };
@@ -85,21 +98,29 @@ const VideoPage: React.FC = () => {
     setShowUploadModal(false);
     setNewVideo({ title: '', tags: [] });
     setTagInput('');
+    setTempVideoPath('');
     Taro.showToast({ title: '视频保存成功', icon: 'success' });
   };
 
+  const handleCancelUpload = () => {
+    setShowUploadModal(false);
+    setNewVideo({ title: '', tags: [] });
+    setTagInput('');
+    setTempVideoPath('');
+  };
+
   const handleVideoClick = (video: TrainingVideo) => {
-    if (video.videoUrl) {
-      Taro.previewMedia({
-        sources: [{
-          url: video.videoUrl,
-          type: 'video'
-        }],
-        current: 0
-      });
-    } else {
+    if (!video.videoUrl) {
       Taro.showToast({ title: '视频地址无效', icon: 'none' });
+      return;
     }
+    setCurrentVideo(video);
+    setShowPlayer(true);
+  };
+
+  const handleClosePlayer = () => {
+    setShowPlayer(false);
+    setCurrentVideo(null);
   };
 
   return (
@@ -143,7 +164,7 @@ const VideoPage: React.FC = () => {
       </View>
 
       {showUploadModal && (
-        <View className={styles.modal} onClick={() => setShowUploadModal(false)}>
+        <View className={styles.modal} onClick={handleCancelUpload}>
           <View className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <Text className={styles.modalTitle}>保存视频信息</Text>
 
@@ -182,13 +203,35 @@ const VideoPage: React.FC = () => {
             </View>
 
             <View className={styles.btnRow}>
-              <View className={styles.cancelBtn} onClick={() => setShowUploadModal(false)}>
+              <View className={styles.cancelBtn} onClick={handleCancelUpload}>
                 <Text className={styles.cancelBtnText}>取消</Text>
               </View>
               <View className={styles.submitBtn} onClick={handleSaveVideo}>
                 <Text className={styles.submitBtnText}>保存</Text>
               </View>
             </View>
+          </View>
+        </View>
+      )}
+
+      {showPlayer && currentVideo && (
+        <View className={styles.playerOverlay} onClick={handleClosePlayer}>
+          <View className={styles.playerContainer} onClick={e => e.stopPropagation()}>
+            <View className={styles.playerHeader}>
+              <Text className={styles.playerTitle}>{currentVideo.title}</Text>
+              <Text className={styles.playerClose} onClick={handleClosePlayer}>×</Text>
+            </View>
+            <Video
+              className={styles.videoPlayer}
+              src={currentVideo.videoUrl}
+              autoplay
+              controls
+              showCenterPlayBtn
+              enableProgressGesture
+              onError={() => {
+                Taro.showToast({ title: '视频播放失败', icon: 'none' });
+              }}
+            />
           </View>
         </View>
       )}

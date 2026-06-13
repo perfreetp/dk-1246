@@ -230,3 +230,48 @@
   color: $color-text-white;
   font-weight: $font-weight-medium;
 }
+
+.playerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 2000;
+  @include flex-center;
+}
+
+.playerContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.playerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg $page-padding;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.playerTitle {
+  font-size: $font-size-lg;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  flex: 1;
+  @include text-ellipsis;
+}
+
+.playerClose {
+  font-size: 48rpx;
+  color: $color-text-white;
+  padding: 0 $spacing-md;
+}
+
+.videoPlayer {
+  flex: 1;
+  width: 100%;
+}
