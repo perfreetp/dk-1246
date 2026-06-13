@@ -13,7 +13,7 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#FF9B52',
-    navigationBarTitleText': '宠物训练',
+    navigationBarTitleText: '宠物训练',
     navigationBarTextStyle: 'white'
   },
   tabBar: {

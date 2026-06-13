@@ -71,6 +71,9 @@ const CheckinPage: React.FC = () => {
       return;
     }
 
+    const plan = plans.find(p => p.id === newRecord.planId);
+    if (!plan) return;
+
     const record: TrainingRecord = {
       id: generateId(),
       planId: newRecord.planId,
@@ -86,9 +89,22 @@ const CheckinPage: React.FC = () => {
 
     addRecord(record);
 
-    const plan = plans.find(p => p.id === newRecord.planId);
-    if (plan && newRecord.success) {
-      updatePlanProgress(plan.id, plan.progress + 1);
+    if (newRecord.success) {
+      const newProgress = plan.progress + 1;
+      updatePlanProgress(plan.id, newProgress);
+
+      if (newProgress >= plan.totalDays) {
+        Taro.showModal({
+          title: '🎉 训练达标！',
+          content: `${plan.name}训练目标已完成！可以去查看证书了。`,
+          showCancel: false,
+          confirmText: '好的'
+        });
+      } else {
+        Taro.showToast({ title: '打卡成功', icon: 'success' });
+      }
+    } else {
+      Taro.showToast({ title: '记录已保存', icon: 'success' });
     }
 
     setShowModal(false);
@@ -99,7 +115,6 @@ const CheckinPage: React.FC = () => {
       environment: '室内',
       notes: ''
     });
-    Taro.showToast({ title: '打卡成功', icon: 'success' });
   };
 
   const getPlanName = (planId: string): string => {

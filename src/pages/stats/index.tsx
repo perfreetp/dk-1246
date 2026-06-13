@@ -2,8 +2,6 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import { useAppContext } from '../../store/context';
 import { calculateStreak } from '../../utils';
-import { mockDailyStats } from '../../data/records';
-import StatCard from '../../components/StatCard';
 import styles from './index.module.scss';
 
 const StatsPage: React.FC = () => {
@@ -37,6 +35,40 @@ const StatsPage: React.FC = () => {
 
     const hardestActions = planStats.slice(0, 3);
 
+    const last7Days = petRecords
+      .filter(r => {
+        const recordDate = new Date(r.date);
+        const now = new Date();
+        const diffDays = Math.floor((now.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays < 7;
+      })
+      .reduce((acc, record) => {
+        const date = record.date;
+        if (!acc[date]) {
+          acc[date] = { total: 0, success: 0 };
+        }
+        acc[date].total++;
+        if (record.success) acc[date].success++;
+        return acc;
+      }, {} as Record<string, { total: number; success: number }>);
+
+    const chartData = Object.entries(last7Days)
+      .map(([date, data]) => ({
+        date: date.slice(5).replace('-', '/'),
+        totalCount: data.total,
+        successCount: data.success,
+        successRate: data.total > 0 ? Math.round((data.success / data.total) * 100) : 0
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-7);
+
+    while (chartData.length < 7) {
+      const now = new Date();
+      now.setDate(now.getDate() - (6 - chartData.length));
+      const dateStr = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+      chartData.unshift({ date: dateStr, totalCount: 0, successCount: 0, successRate: 0 });
+    }
+
     return {
       totalRecords,
       successRecords,
@@ -44,7 +76,8 @@ const StatsPage: React.FC = () => {
       totalDuration,
       streak,
       hardestActions,
-      avgDuration: totalRecords > 0 ? Math.round(totalDuration / totalRecords) : 0
+      avgDuration: totalRecords > 0 ? Math.round(totalDuration / totalRecords) : 0,
+      chartData
     };
   }, [petRecords, plans, currentPet]);
 
@@ -74,21 +107,26 @@ const StatsPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionTitle}>
             <Text className={styles.title}>成功率曲线</Text>
+            <Text className={styles.subtitle}>近7天训练数据</Text>
           </View>
           <View className={styles.chartCard}>
             <View className={styles.chart}>
-              {mockDailyStats.map((item, index) => {
-                const successHeight = (item.successCount / Math.max(item.totalCount, 1)) * maxBarHeight;
-                const failHeight = ((item.totalCount - item.successCount) / Math.max(item.totalCount, 1)) * maxBarHeight;
+              {stats.chartData.map((item, index) => {
+                const successHeight = item.totalCount > 0 
+                  ? (item.successCount / Math.max(item.totalCount, 1)) * maxBarHeight 
+                  : 0;
                 return (
                   <View key={index} className={styles.barWrapper}>
                     <View style={{ display: 'flex', alignItems: 'flex-end', height: `${maxBarHeight}rpx` }}>
                       <View 
                         className={styles.bar}
-                        style={{ height: `${successHeight}rpx` }}
+                        style={{ height: `${Math.max(successHeight, 4)}rpx` }}
                       />
                     </View>
                     <Text className={styles.dateLabel}>{item.date}</Text>
+                    {item.totalCount > 0 && (
+                      <Text className={styles.rateLabel}>{item.successRate}%</Text>
+                    )}
                   </View>
                 );
               })}
@@ -96,11 +134,10 @@ const StatsPage: React.FC = () => {
             <View className={styles.legend}>
               <View className={styles.legendItem}>
                 <View className={`${styles.legendDot} ${styles.legendDotSuccess}`} />
-                <Text className={styles.legendText}>成功</Text>
+                <Text className={styles.legendText}>成功次数</Text>
               </View>
               <View className={styles.legendItem}>
-                <View className={`${styles.legendDot} ${styles.legendDotFail}`} />
-                <Text className={styles.legendText}>失败</Text>
+                <Text className={styles.legendText}>共{stats.totalRecords}次训练</Text>
               </View>
             </View>
           </View>
@@ -149,6 +186,10 @@ const StatsPage: React.FC = () => {
             <View className={styles.historyItem}>
               <Text className={styles.historyLabel}>成功次数</Text>
               <Text className={styles.historyValue}>{stats.successRecords}次</Text>
+            </View>
+            <View className={styles.historyItem}>
+              <Text className={styles.historyLabel}>失败次数</Text>
+              <Text className={styles.historyValue}>{stats.totalRecords - stats.successRecords}次</Text>
             </View>
             <View className={styles.historyItem}>
               <Text className={styles.historyLabel}>总训练时长</Text>

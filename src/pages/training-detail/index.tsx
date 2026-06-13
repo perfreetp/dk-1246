@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
@@ -8,33 +8,36 @@ import styles from './index.module.scss';
 
 const TrainingDetailPage: React.FC = () => {
   const { plans, records } = useAppContext();
+  const [plan, setPlan] = useState<any>(null);
   const [showComplete, setShowComplete] = useState(false);
 
-  const planId = useMemo(() => {
+  useEffect(() => {
     const pages = Taro.getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    const options = (currentPage as any)?.options || {};
-    return options.planId || '';
-  }, []);
-
-  const plan = useMemo(() => {
-    return plans.find(p => p.id === planId);
-  }, [plans, planId]);
+    const currentPage = pages[pages.length - 1] as any;
+    const options = currentPage?.options || {};
+    const planId = options.planId || '';
+    
+    const foundPlan = plans.find(p => p.id === planId);
+    setPlan(foundPlan);
+  }, [plans]);
 
   const planRecords = useMemo(() => {
-    return records.filter(r => r.planId === planId).slice(0, 5);
-  }, [records, planId]);
+    if (!plan) return [];
+    return records.filter(r => r.planId === plan.id).slice(0, 5);
+  }, [records, plan]);
 
   if (!plan) {
     return (
       <View className={styles.container}>
-        <Text>训练计划不存在</Text>
+        <View className={styles.notFound}>
+          <Text className={styles.notFoundText}>训练计划不存在</Text>
+        </View>
       </View>
     );
   }
 
   const progressPercent = Math.round((plan.progress / plan.totalDays) * 100);
-  const stageColor = getStageColor(plan.stage);
+  const isCompleted = plan.progress >= plan.totalDays;
 
   const handleStartTraining = () => {
     Taro.switchTab({ url: '/pages/checkin/index' });
@@ -44,6 +47,10 @@ const TrainingDetailPage: React.FC = () => {
     Taro.navigateTo({ 
       url: `/pages/certificate/index?planId=${plan.id}` 
     });
+  };
+
+  const handleComplete = () => {
+    setShowComplete(true);
   };
 
   return (
@@ -65,7 +72,7 @@ const TrainingDetailPage: React.FC = () => {
           <View className={styles.progressBar}>
             <View 
               className={styles.progressFill} 
-              style={{ width: `${progressPercent}%` }}
+              style={{ width: `${Math.min(progressPercent, 100)}%` }}
             />
           </View>
         </View>
@@ -94,7 +101,7 @@ const TrainingDetailPage: React.FC = () => {
               <View className={styles.infoIcon}>📊</View>
               <Text className={styles.infoLabel}>训练状态</Text>
               <Text className={styles.infoValue}>
-                {plan.status === 'active' ? '进行中' : plan.status === 'completed' ? '已完成' : '已暂停'}
+                {isCompleted ? '已达标 🎉' : '进行中'}
               </Text>
             </View>
           </View>
@@ -127,15 +134,16 @@ const TrainingDetailPage: React.FC = () => {
           </View>
         </View>
 
-        {plan.status === 'active' && (
+        {isCompleted ? (
+          <View className={styles.completedSection}>
+            <Text className={styles.completedText}>🎉 训练目标已达成！</Text>
+            <View className={styles.certificateBtn} onClick={handleViewCertificate}>
+              <Text className={styles.certificateBtnText}>🏆 查看训练证书</Text>
+            </View>
+          </View>
+        ) : (
           <View className={styles.actionBtn} onClick={handleStartTraining}>
             <Text className={styles.actionBtnText}>开始训练打卡</Text>
-          </View>
-        )}
-
-        {progressPercent >= 100 && (
-          <View className={styles.actionBtn} onClick={() => setShowComplete(true)}>
-            <Text className={styles.actionBtnText}>🎉 完成训练</Text>
           </View>
         )}
       </ScrollView>

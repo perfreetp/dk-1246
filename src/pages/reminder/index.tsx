@@ -3,16 +3,18 @@ import { View, Text, Switch, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useAppContext } from '../../store/context';
 import { Reminder } from '../../types';
+import { generateId } from '../../utils';
 import styles from './index.module.scss';
 
 const dayNames = ['一', '二', '三', '四', '五', '六', '日'];
 
 const ReminderPage: React.FC = () => {
-  const { pets, reminders, currentPetId } = useAppContext();
+  const { pets, reminders, currentPetId, addReminder, updateReminder } = useAppContext();
   const [showModal, setShowModal] = useState(false);
   const [newReminder, setNewReminder] = useState({
     petId: '',
-    time: '09:00',
+    timeHour: '09',
+    timeMin: '00',
     days: [1, 2, 3, 4, 5, 6, 7]
   });
 
@@ -25,10 +27,7 @@ const ReminderPage: React.FC = () => {
   }, [reminders, currentPet]);
 
   const handleToggleReminder = (reminder: Reminder) => {
-    Taro.showToast({ 
-      title: reminder.enabled ? '已关闭提醒' : '已开启提醒', 
-      icon: 'none' 
-    });
+    updateReminder(reminder.id, { enabled: !reminder.enabled });
   };
 
   const handleToggleDay = (day: number) => {
@@ -46,16 +45,34 @@ const ReminderPage: React.FC = () => {
       return;
     }
     if (newReminder.days.length === 0) {
-      Taro.showToast({ title: '请选择提醒日期', icon: 'none' });
+      Taro.showToast({ title: '请至少选择一天', icon: 'none' });
       return;
     }
+
+    const time = `${newReminder.timeHour.padStart(2, '0')}:${newReminder.timeMin.padStart(2, '0')}`;
+    
+    const reminder: Reminder = {
+      id: generateId(),
+      petId: newReminder.petId,
+      time,
+      enabled: true,
+      days: newReminder.days.sort()
+    };
+
+    addReminder(reminder);
     setShowModal(false);
-    Taro.showToast({ title: '提醒设置成功', icon: 'success' });
     setNewReminder({
       petId: '',
-      time: '09:00',
+      timeHour: '09',
+      timeMin: '00',
       days: [1, 2, 3, 4, 5, 6, 7]
     });
+    Taro.showToast({ title: '提醒设置成功', icon: 'success' });
+  };
+
+  const openAddModal = () => {
+    setNewReminder(prev => ({ ...prev, petId: currentPet?.id || '' }));
+    setShowModal(true);
   };
 
   return (
@@ -69,6 +86,7 @@ const ReminderPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionTitle}>
             <Text className={styles.title}>提醒列表</Text>
+            <Text className={styles.count}>{petReminders.length}个</Text>
           </View>
           <View className={styles.reminderList}>
             {petReminders.length > 0 ? (
@@ -100,17 +118,14 @@ const ReminderPage: React.FC = () => {
                 );
               })
             ) : (
-              <View className={styles.reminderItem}>
+              <View className={styles.emptyReminder}>
                 <Text style={{ color: '#B2BEC3', textAlign: 'center', width: '100%' }}>
                   暂无提醒设置
                 </Text>
               </View>
             )}
           </View>
-          <View className={styles.addBtn} onClick={() => {
-            setNewReminder(prev => ({ ...prev, petId: currentPet?.id || '' }));
-            setShowModal(true);
-          }}>
+          <View className={styles.addBtn} onClick={openAddModal}>
             <Text>➕</Text>
             <Text className={styles.addBtnText}>添加新提醒</Text>
           </View>
@@ -134,7 +149,7 @@ const ReminderPage: React.FC = () => {
 
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>选择宠物</Text>
-              <View className={styles.daysGrid}>
+              <View className={styles.petGrid}>
                 {pets.map(pet => (
                   <View
                     key={pet.id}
@@ -150,27 +165,33 @@ const ReminderPage: React.FC = () => {
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>提醒时间</Text>
               <View className={styles.timePicker}>
-                <Input
-                  className={styles.formInput}
-                  type='text'
-                  placeholder='小时'
-                  value={newReminder.time.split(':')[0]}
-                  onInput={e => {
-                    const hour = e.detail.value.padStart(2, '0');
-                    setNewReminder(prev => ({ ...prev, time: `${hour}:${prev.time.split(':')[1]}` }));
-                  }}
-                />
-                <Text>:</Text>
-                <Input
-                  className={styles.formInput}
-                  type='text'
-                  placeholder='分钟'
-                  value={newReminder.time.split(':')[1]}
-                  onInput={e => {
-                    const min = e.detail.value.padStart(2, '0');
-                    setNewReminder(prev => ({ ...prev, time: `${prev.time.split(':')[0]}:${min}` }));
-                  }}
-                />
+                <View className={styles.timeInputWrapper}>
+                  <Input
+                    className={styles.timeInput}
+                    type='number'
+                    maxlength={2}
+                    value={newReminder.timeHour}
+                    onInput={e => {
+                      const val = e.detail.value.slice(0, 2);
+                      setNewReminder(prev => ({ ...prev, timeHour: val }));
+                    }}
+                  />
+                  <Text className={styles.timeColon}>时</Text>
+                </View>
+                <Text className={styles.timeSep}>:</Text>
+                <View className={styles.timeInputWrapper}>
+                  <Input
+                    className={styles.timeInput}
+                    type='number'
+                    maxlength={2}
+                    value={newReminder.timeMin}
+                    onInput={e => {
+                      const val = e.detail.value.slice(0, 2);
+                      setNewReminder(prev => ({ ...prev, timeMin: val }));
+                    }}
+                  />
+                  <Text className={styles.timeColon}>分</Text>
+                </View>
               </View>
             </View>
 

@@ -44,6 +44,11 @@
   color: $color-text-primary;
 }
 
+.count {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
 .reminderList {
   background: $color-bg-card;
   border-radius: $radius-lg;
@@ -60,6 +65,13 @@
   &:last-child {
     border-bottom: none;
   }
+}
+
+.emptyReminder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-xl;
 }
 
 .petInfo {
@@ -150,7 +162,7 @@
   display: block;
   font-size: $font-size-sm;
   color: $color-text-secondary;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 .modal {
@@ -191,25 +203,43 @@
   margin-bottom: $spacing-sm;
 }
 
-.formInput {
-  width: 100%;
-  padding: $spacing-md;
-  background: $color-bg-page;
-  border-radius: $radius-md;
-  font-size: $font-size-md;
-  color: $color-text-primary;
-  box-sizing: border-box;
+.petGrid {
+  display: flex;
+  gap: $spacing-sm;
 }
 
 .timePicker {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: $spacing-sm;
 }
 
+.timeInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
 .timeInput {
-  width: 200rpx;
+  width: 120rpx;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  font-size: $font-size-lg;
+  color: $color-text-primary;
   text-align: center;
+}
+
+.timeColon {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+}
+
+.timeSep {
+  font-size: 48rpx;
+  color: $color-text-primary;
+  font-weight: bold;
 }
 
 .daysGrid {
